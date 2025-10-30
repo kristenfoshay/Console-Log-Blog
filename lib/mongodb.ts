@@ -13,20 +13,24 @@ if (process.env.NODE_ENV === 'development') {
     client = new MongoClient(uri);
     global._mongoClientPromise = client.connect();
   }
-  client = global._mongoClientPromise as any;
+  const clientPromise = global._mongoClientPromise;
 } else {
   client = new MongoClient(uri);
 }
 
 export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db }> {
   if (!db) {
-    const clientInstance = await client.connect();
+    let clientInstance: MongoClient;
+    if (process.env.NODE_ENV === 'development') {
+      clientInstance = await global._mongoClientPromise;
+    } else {
+      clientInstance = await client.connect();
+    }
     db = clientInstance.db('blog_platform');
     
     await db.collection('posts').createIndex({ title: 'text', content: 'text' });
     await db.collection('posts').createIndex({ createdAt: -1 });
-    await db.collection('users').createIndex({ email: 1 }, { unique: true });
   }
   
-  return { client, db };
+  return { client: process.env.NODE_ENV === 'development' ? await global._mongoClientPromise : client, db };
 }

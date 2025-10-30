@@ -7,9 +7,19 @@ export async function GET(
 ) {
   try {
     const { db } = await connectToDatabase();
+    const query = decodeURIComponent(params.query);
+    
+    const searchRegex = new RegExp(query, 'i');
     
     const posts = await db.collection('posts')
-      .find({ $text: { $search: params.query } })
+      .find({
+        $or: [
+          { title: { $regex: searchRegex } },
+          { content: { $regex: searchRegex } },
+          { tags: { $in: [searchRegex] } }
+        ]
+      })
+      .sort({ createdAt: -1 })
       .toArray();
 
     return NextResponse.json(posts);

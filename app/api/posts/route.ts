@@ -4,29 +4,14 @@ import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
-    const { title, content, authorId, tags } = await request.json();
+    const { title, content, tags } = await request.json();
 
     const { db } = await connectToDatabase();
-
-    // Verify author exists
-    const author = await db.collection('users').findOne({ 
-      _id: new ObjectId(authorId) 
-    });
-
-    if (!author) {
-      return NextResponse.json(
-        { error: 'Author not found' },
-        { status: 404 }
-      );
-    }
 
     const post = {
       title,
       content,
-      authorId: new ObjectId(authorId),
-      authorName: author.name,
       tags: tags || [],
-      comments: [],
       views: 0,
       createdAt: new Date(),
       updatedAt: new Date()
