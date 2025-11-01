@@ -1,6 +1,6 @@
 # A Console Log Blog
 
-A full-stack blog application built with Next.js (React), TypeScript, Tailwind CSS, and MongoDB.
+A full-stack blog application built with Next.js (React), TypeScript, Tailwind CSS, and MongoDB. This project is built off/adapted from https://github.com/kristenfoshay/Blog-Platform and is still in progress.
 
 ## Features:
 
